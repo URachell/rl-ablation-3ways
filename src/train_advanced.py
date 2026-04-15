@@ -1,11 +1,16 @@
 import os
+import sys
 import torch
 import numpy as np
 import pickle
 from pathlib import Path
+
+# Add src to path
+sys.path.insert(0, '/content/rl-ablation-3ways/src')
+
 from train import (
     MultiAgentEnergyEnv, DuelingDDQN, SharedDDQNAgent, 
-    evaluate_full_metrics
+    evaluate_full_metrics, ReplayBuffer
 )
 from models import AttentionDDQN, PPOActor, PPOCritic
 from environments import DIFFICULTY_CONFIG
@@ -40,7 +45,6 @@ class AttentionAgent(AdvancedSharedDDQNAgent):
         self.target_net.eval()
         self.optimizer = torch.optim.Adam(self.q_net.parameters(), lr=lr)
         
-        from train import ReplayBuffer
         self.memory = ReplayBuffer(use_per=use_per)
         self.epsilon, self.epsilon_min, self.epsilon_decay = 0.3, 0.05, 0.995
         self.update_steps, self.target_update_freq = 0, 300
